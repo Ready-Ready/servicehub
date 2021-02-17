@@ -3,6 +3,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import NavBar from '../NavBar/NavBar';
 import Program from '../ProgramInfo/Program';
+import ProgramForms from '../Forms/ProgramForms';
 import FindResource from '../FindResources/FindResources';
 import Signup from "../Auth/Signup";
 import Login from "../Auth/Login";
@@ -27,6 +28,11 @@ const StartPage = () => {
               path="/programs/:program_ID"
               render={(props) => <Program {...props} />}
             />
+            <Route 
+              exact
+              path="/programs/:program_ID/forms"
+              render={(props) => <ProgramForms {...props} />}
+            />            
             <Route path="/signup" component={Signup} />
             <Route path="/login" component={Login} />
             <Route path="/signin" component={SignIn} />

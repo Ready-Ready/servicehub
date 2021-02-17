@@ -28,6 +28,7 @@ const ResourceCard = ({ resource }) => {
                     </Typography>
                     <CardActions>
                         <NavLink to={{pathname: `/programs/${resource.externalId}`}}>Learn More</NavLink>
+                        <NavLink to={{pathname: `/programs/${resource.externalId}/forms`}}>View Forms</NavLink>
                     </CardActions>    
                 </CardContent>
             </Card>

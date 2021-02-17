@@ -2,7 +2,8 @@ import React, { useRef, useState } from "react"
 //import { Form, Button, Card, Alert } from "react-bootstrap"
 import {Paper, Grid, Typography, TextField, FormControl as Form, FormGroup, FormControl, FormLabel, Card, CardContent, Button } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
-import { useAuth } from "../../contexts/AuthContext"
+//import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../Auth"
 import { Link, useHistory } from "react-router-dom"
 
 export default function UpdateProfile() {
@@ -36,8 +37,9 @@ export default function UpdateProfile() {
       .then(() => {
         history.push("/")
       })
-      .catch(() => {
-        setError("Failed to update account")
+      .catch((err) => {
+        console.log(err);
+        setError(`Failed to update account: ${err.message}`);
       })
       .finally(() => {
         setLoading(false)
@@ -48,7 +50,7 @@ export default function UpdateProfile() {
     <>
       <Card>
         <CardContent>
-          <Grid container spacing={0} justify="center" direction="row">
+          <Grid container spacing={2} justify="center" direction="row">
               <Grid item>
                 <Grid
                 container
@@ -63,25 +65,28 @@ export default function UpdateProfile() {
                     className="login-background"                  
                   >
                     <Grid item>
+                      <br></br>
                       <Typography component="h1" variant="h5">
                       Update Service Provider Profile
                       </Typography>
                       {error && <Alert severity="error" variant="outlined">{error}</Alert>}
+                      <br></br>
                     </Grid>
                     <Grid item>
-                      <form submit={handleSubmit}>
+                      <form onSubmit={handleSubmit}>
                         <Grid container direction="column" spacing={2} alignItems="center">
                           <Grid item>
-                            <TextField label="Email" type="email" ref={emailRef} required defaultValue={currentUser.email} />
+                            <TextField label="Email" type="email" inputRef={emailRef} required 
+                            defaultValue={currentUser.email} variant="outlined" />
                           </Grid>
                           <Grid item>
-                            <TextField label="Password" type="password" ref={passwordRef} 
+                            <TextField label="Password" type="password" inputRef={passwordRef} 
                               placeholder="Leave blank to keep the same" variant="outlined" 
                             />
                           </Grid>
                           <Grid item>
                             <TextField label="Password Confirm" type="password" 
-                              ref={passwordConfirmRef} placeholder="Leave blank to keep the same" 
+                              inputRef={passwordConfirmRef} placeholder="Leave blank to keep the same" 
                               variant="outlined" 
                             />
                           </Grid>                          
@@ -97,6 +102,8 @@ export default function UpdateProfile() {
                             >
                               Update
                             </Button>
+                            <br></br>
+                            <br></br>
                           </Grid>                        
                         </Grid>
                       </form>

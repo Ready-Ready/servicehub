@@ -18,8 +18,14 @@ export function AuthProvider({ children }) {
     return user;
   }
 
-  function login(email, password) {
-    return auth.signInWithEmailAndPassword(email, password)
+  async function login(email, password) {
+    /*
+    const user = await auth.signInWithEmailAndPassword(email, password);
+    console.log('the user object returned from login:');
+    console.log(user);
+    return user;
+    */
+    return auth.signInWithEmailAndPassword(email, password);
   }
 
   function logout() {

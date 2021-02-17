@@ -10,7 +10,7 @@ import { Card, Grid, CardContent, CardActions, Typography, Button } from '@mater
 const ResourceCard = ({ resource }) => {
     
     return (
-        <Grid  item xs={12} sm={6}>
+        <Grid item xs={12} sm={6}>
             <Card >
                 <CardContent>
                     <Typography variant="h5" component="h2">

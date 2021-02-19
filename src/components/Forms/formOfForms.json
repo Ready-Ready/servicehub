@@ -1,0 +1,150 @@
+{
+    "title": "Define New Form",
+    "description": "This app is used to define a new form to associate the this program.",
+    "type": "object",
+    "required": ["type", "status"],
+    "properties": {
+        "type": {
+            "type": "string",
+            "title": "Form Type",
+            "enum": ["registration", "first appointment", "satisfaction survey"]
+        },
+        "status": {
+            "type": "string",
+            "title": "Form Status",
+            "enum": ["draft", "in review", "active", "inactive"]
+        },
+        "schema": {
+            "type": "object",
+            "required": [],
+            "properties": {
+                "title": {
+                    "type": "string",
+                    "title": "Title of Form Presented to User"
+                },
+                "type": {
+                    "type": "string",
+                    "title": "Type of Form",
+                    "default": "object",
+                    "enum": ["object"]
+                },
+                "propertiesTemp": {
+                    "title": "Fields on Form",
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "apiName": {
+                                "type": "string",
+                                "title": "API Name"
+                            },
+                            "type": {
+                                "type": "string",
+                                "title": "Data Type",
+                                "enum": ["string", "integer", "date", "email", "web address"
+                                    , "list of values", "list of objects"]
+                            },
+                            "title": {
+                                "type": "string",
+                                "title": "Label for the field"
+                            }
+                        },
+                        "dependencies": {
+                            "type": {
+                                "oneOf": [
+                                    {
+                                        "properties": {
+                                            "type": {
+                                                "enum": ["list of values"]
+                                            },
+                                            "enum": {
+                                                "type": "array",
+                                                "title": "Possible Values",
+                                                "items": {
+                                                    "properties": {
+                                                        "value": {
+                                                            "type": "string",
+                                                            "title": "Value"
+                                                        }
+                                                    }
+                                                }
+                                            }                                                
+                                        },
+                                        "required": ["enum"]
+                                    },
+                                    {
+                                        "properties": {
+                                            "type": {
+                                                "enum": ["list of objects"]
+                                            },
+                                            "arrayPropertiesTemp": {
+                                                "title": "Fields on a List",
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "apiName": {
+                                                            "type": "string",
+                                                            "title": "API Name"
+                                                        },
+                                                        "type": {
+                                                            "type": "string",
+                                                            "title": "Data Type",
+                                                            "enum": ["string", "integer", "date", "email", "web address", "list of values"]
+                                                        },
+                                                        "title": {
+                                                            "type": "string",
+                                                            "title": "Label for the field"
+                                                        }
+                                                    },
+                                                    "dependencies": {
+                                                        "type": {
+                                                            "oneOf": [
+                                                                {
+                                                                    "properties": {
+                                                                        "type": {
+                                                                            "enum": ["list of values"]
+                                                                        },
+                                                                        "enum": {
+                                                                            "type": "array",
+                                                                            "title": "Possible Values",
+                                                                            "items": {
+                                                                                "properties": {
+                                                                                    "value": {
+                                                                                        "type": "string",
+                                                                                        "title": "Value"
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }                                                
+                                                                    },
+                                                                    "required": ["enum"]
+                                                                },
+                                                                {
+                                                                    "properties": {
+                                                                        "type": {
+                                                                            "enum": ["string", "integer", "date", "email", "web address"]
+                                                                        }
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    }                                                    
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "properties": {
+                                            "type": {
+                                                "enum": ["string", "integer", "date", "email", "web address"]
+                                            }
+                                        }
+                                    }                                    
+                                ]
+                            }
+                        }                        
+                    }
+                }
+            }
+        }
+    }
+}

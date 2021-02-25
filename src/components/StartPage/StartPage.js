@@ -18,10 +18,11 @@ const StartPage = () => {
       <>
         <NavBar />
         <Switch>
-            <Route 
+            <PrivateRoute 
               exact 
               path="/" 
-              render={(props) => <FindResource {...props} />} 
+              //render={(props) => <FindResource {...props} />} 
+              component={FindResource} />
             />
             <Route 
               exact

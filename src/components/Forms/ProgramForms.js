@@ -21,13 +21,15 @@ const useStyles = makeStyles((theme) => ({
     modal: {
         //display: 'flex',
         position: 'absolute',
-        top: '20%',
-        left: '20%',
-        overflow: 'scroll',
-        height: '100%',
+        top: '20px',
+        left: '20px',
+        overflowY: 'scroll',
+        height: '80%',
+        width: '60%',
         display: 'block',
         alignItems: 'center',
         justifyContent: 'center',
+        margin: '5%'        
       },
     paper: {
         //backgroundColor: theme.palette.background.paper,
@@ -55,10 +57,9 @@ const displayForm = (form, handleOpen, handleOpenEdit) => {
                             <Button variant="outlined" onClick={(e) => handleOpen(e, JSON.stringify(form.schema))}>
                                 Preview Form
                             </Button>                        
-                            <Button variant="outlined" onClick={(e) => handleOpenEdit(e, JSON.stringify(form.schema), form.id)}>
+                            <Button variant="outlined" onClick={(e) => handleOpenEdit(e, form, form.id)}>
                                 Edit Form
                             </Button>                                                    
-                        <NavLink to={{pathname: `/`}}>Back</NavLink>
                     </CardActions>    
                 </CardContent>
             </Card>
@@ -71,7 +72,7 @@ const Forms = (props) => {
     const { match } = props;
     const { params } = match;
     const { program_ID } = params;
-    const [forms, setForms] = useState([]);
+    const [formsState, setFormsState] = useState([]);
     const [program, setProgram] = useState(null);
     const [activeForm, setActiveForm] = useState(null);
 
@@ -89,7 +90,7 @@ const Forms = (props) => {
                 let formObj = { ...doc.data(), 'id': currentID};
                 aryForms.push(formObj);
             });
-            setForms(aryForms);
+            setFormsState(aryForms);
             //console.log('record id is: ' + program)
         }
         fetchForms();
@@ -98,15 +99,92 @@ const Forms = (props) => {
     const [open, setOpen] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
     const [formJSON, setFormJSON] = useState();
+    const [formEditData, setFormEditData] = useState();
     const handleOpen = (e, schema) => {
         e.preventDefault();
         setFormJSON(schema);
         setOpen(true);
     };
 
-    const handleOpenEdit = (e, schema, formID) => {
+    const handleOpenEdit = (e, form, formID) => {
         e.preventDefault();
-        setFormJSON(schema);
+        //pre-fill the form of forms with the definitions as it is saved so far
+
+        //this object will translate the concatenated type and format from JSON schema to the 
+        //values we allow provider to select for a field type
+        const typeformatTrans = {
+            "string~": "string",
+            "string~date": "date",
+            "integer~": "integer",
+            "string~email": "email",
+            "string~web address": "web address",
+            "array~": "list of objects",
+            "string~enum": "list of values"
+        }
+
+        const formData = {};
+        if(form) {
+            formData.type = form.type;
+            formData.status = form.status;
+            formData.schema = {};
+            formData.schema.title = form.schema.title;
+            formData.schema.type = form.schema.type;
+            formData.schema.propertiesTemp = [];
+            Object.keys(form.schema.properties).forEach((p, pIdx) => {
+                const formatVal = form.schema.properties[p].enum?"enum":form.schema.properties[p].format?form.schema.properties[p].format:'';
+                formData.schema.propertiesTemp.push(
+                    {
+                        apiName: p,
+                        type: typeformatTrans[`${form.schema.properties[p].type}~${formatVal}`],
+                        title: form.schema.properties[p].title,
+                        format: form.schema.properties[p].format
+                    }
+                );
+                if(formatVal === "enum"){
+                    formData.schema.propertiesTemp[pIdx].enum = [];
+                    form.schema.properties[p].enum.forEach(v => {
+                        formData.schema.propertiesTemp[pIdx].enum.push(
+                            {
+                                value: v
+                            }
+                        )                
+                    })
+                }
+
+                if(typeformatTrans[`${form.schema.properties[p].type}~${formatVal}`] === 'list of objects') {
+                    formData.schema.propertiesTemp[pIdx].arrayPropertiesTemp = [];
+                    const tempProp = form.schema.properties[p].items.properties;
+                    Object.keys(tempProp).forEach((pa, paIdx) => {
+                        if(pa !== 'type'){
+                            const formatVal2 = tempProp[pa].enum?"enum":tempProp[pa].format?tempProp[pa].format:'';
+                            formData.schema.propertiesTemp[pIdx].arrayPropertiesTemp.push(
+                                {
+                                    apiName: pa,
+                                    type: typeformatTrans[`${tempProp[pa].type}~${formatVal2}`],
+                                    title: tempProp[pa].title,
+                                    format: tempProp[pa].format
+                                }
+                            );
+                            if(formatVal2 === "enum"){
+                                formData.schema.propertiesTemp[pIdx].arrayPropertiesTemp[paIdx].enum = [];
+                                tempProp[pa].enum.forEach(v => {
+                                    formData.schema.propertiesTemp[pIdx].arrayPropertiesTemp[paIdx].enum.push(
+                                        {
+                                            value: v
+                                        }
+                                    )                
+                                })
+                            }
+                        }
+                    });        
+                }
+
+            });
+            //console.log(formData);
+            //formData.schema.propertiesTemp.push({apiName: "mikeAPI"});
+        }
+
+        setFormEditData(formData);
         setOpenEdit(true);
         setActiveForm(formID);
     };    
@@ -168,7 +246,7 @@ const Forms = (props) => {
                 newSchema.properties[p.apiName] = {
                     title: p.title,
                     type: 'array',
-                    items: {properties: {}}
+                    items: {properties: {"type": "object"}}
                 }
                 //loop through the array of fields to add to this array form
                 p.arrayPropertiesTemp.forEach(i => {
@@ -197,8 +275,13 @@ const Forms = (props) => {
         console.log(JSON.stringify(newJson));        
 
         const db = firebase.firestore();
-        const formRef = db.collection("programs").doc(program).collection("forms").doc(activeForm);
-        await formRef.set(newJson);
+        if(activeForm){
+            const formRef = db.collection("programs").doc(program).collection("forms").doc(activeForm);
+            await formRef.set(newJson);
+        } else {
+            await db.collection("programs").doc(program).collection("forms").add(newJson);
+        }
+
 
         setActiveForm(null);
         setOpenEdit(false);
@@ -208,11 +291,24 @@ const Forms = (props) => {
         
         <>
             <Grid container spacing={2} className={classes.resourceContainer}>
-                    {forms.map((form) =>(
-                            displayForm(form, handleOpen, handleOpenEdit)
-                        )
-                    )}
+            <Grid item xs={12} >
+                    <Card>
+                        <CardContent>                    
+                            <Button variant="outlined" type="button" onClick={(e) => handleOpenEdit(e, null, null)}>
+                                New Form
+                            </Button>
+                            &nbsp;&nbsp;
+                            <NavLink to={{pathname: `/`}}>Back</NavLink>
+                        </CardContent>
+                    </Card>
+                </Grid>
+                {formsState.map((form) =>(
+                        displayForm(form, handleOpen, handleOpenEdit)
+                    )
+                )}
+
             </Grid>
+
             <Modal
                 aria-labelledby="transition-modal-title"
                 aria-describedby="transition-modal-description"
@@ -227,6 +323,11 @@ const Forms = (props) => {
             >
                 <Fade in={open}>
                 <Card>
+                    <CardActions>
+                        <Button variant="outlined" type="button" onClick={() => setOpen(false)}>
+                            Close
+                        </Button>
+                    </CardActions>
                     <CardContent>          
                         <Typography variant="h5" component="h2">
                             Form Preview
@@ -236,11 +337,7 @@ const Forms = (props) => {
                             :null
                         }
                     </CardContent>
-                    <CardActions>
-                        <Button variant="outlined" type="button" onClick={() => setOpen(false)}>
-                            Close
-                        </Button>
-                    </CardActions>
+
                 </Card>
                 </Fade>
             </Modal>
@@ -258,20 +355,22 @@ const Forms = (props) => {
             >
                 <Fade in={openEdit}>
                 <Card>
+                    <CardActions>
+                        <Button variant="outlined" type="button" onClick={() => setOpenEdit(false)}>
+                            Close
+                        </Button>
+                    </CardActions>
                     <CardContent>          
                         <Typography variant="h5" component="h2">
                             Form Edit
                         </Typography>          
                         <Form 
                             schema={formOfForms} 
+                            formData={formEditData}
                             onSubmit={handleFormSubmit}
                         />
                     </CardContent>
-                    <CardActions>
-                        <Button variant="outlined" type="button" onClick={() => setOpenEdit(false)}>
-                            Close
-                        </Button>
-                    </CardActions>
+
                 </Card>
                 </Fade>
             </Modal>

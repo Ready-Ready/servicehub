@@ -1,6 +1,6 @@
 {
     "title": "Define New Form",
-    "description": "This app is used to define a new form to associate the this program.",
+    "description": "This app is used to define a new form to associate to this program.",
     "type": "object",
     "required": ["type", "status"],
     "properties": {

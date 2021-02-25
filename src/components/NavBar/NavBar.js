@@ -51,7 +51,7 @@ export default function NavBar(){
           <MenuIcon />
         </IconButton>
         <Typography variant="h6" className={classes.title}>
-          Resource Hub
+          Service Provider Hub
         </Typography>
 
         {currentUser?

@@ -309,7 +309,7 @@ const Forms = (props) => {
 
             </Grid>
 
-            <Modal
+            <Modal // turn modal into dialog 
                 aria-labelledby="transition-modal-title"
                 aria-describedby="transition-modal-description"
                 className={classes.modal}

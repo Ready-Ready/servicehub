@@ -22,7 +22,7 @@ const StartPage = () => {
               exact 
               path="/" 
               //render={(props) => <FindResource {...props} />} 
-              component={FindResource} />
+              component={FindResource} 
             />
             <Route 
               exact

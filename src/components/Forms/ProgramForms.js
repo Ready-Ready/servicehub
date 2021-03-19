@@ -2,6 +2,13 @@ import React, { useEffect, useState, useRef } from 'react';
 import { NavLink } from "react-router-dom";
 import { makeStyles } from '@material-ui/styles';
 import Modal from '@material-ui/core/Modal';
+
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
 import {
     Grid, Card, CardContent, CardActions, Typography, Box, Button, Paper 
     , Chip, Avatar
@@ -309,71 +316,53 @@ const Forms = (props) => {
 
             </Grid>
 
-            <Modal
+            <Dialog // turn modal into dialog 
                 aria-labelledby="transition-modal-title"
                 aria-describedby="transition-modal-description"
-                className={classes.modal}
+                maxWidth='lg'
                 open={open}
                 onClose={handleClose}
-                closeAfterTransition
-                BackdropComponent={Backdrop}
-                BackdropProps={{
-                timeout: 500,
-                }}
+                //closeAfterTransition
+                //BackdropComponent={Backdrop}
+               disableBackdropClick={true}
             >
-                <Fade in={open}>
-                <Card>
-                    <CardActions>
-                        <Button variant="outlined" type="button" onClick={() => setOpen(false)}>
-                            Close
-                        </Button>
-                    </CardActions>
-                    <CardContent>          
-                        <Typography variant="h5" component="h2">
-                            Form Preview
-                        </Typography>          
+                <DialogTitle id="form-preview-title">Preview Form</DialogTitle>
+                <DialogActions>
+                    <Button variant="outlined" type="button" onClick={() => setOpen(false)}>
+                        Close
+                    </Button>
+                </DialogActions>
+                <DialogContent  scroll={'paper'} dividers>                   
                         {formJSON?
                             <Form schema={JSON.parse(formJSON)} />
                             :null
                         }
-                    </CardContent>
-
-                </Card>
-                </Fade>
-            </Modal>
-            <Modal
+                </DialogContent>
+            </Dialog>
+            <Dialog
                 aria-labelledby="Edit Form Definition"
                 aria-describedby="Edit Form Definition"
-                className={classes.modal}
+                //className={classes.modal}
                 open={openEdit}
                 onClose={handleCloseEdit}
-                closeAfterTransition
-                BackdropComponent={Backdrop}
-                BackdropProps={{
-                timeout: 500,
-                }}
+                disableBackdropClick={true}
+                maxWidth='lg'
             >
-                <Fade in={openEdit}>
-                <Card>
-                    <CardActions>
-                        <Button variant="outlined" type="button" onClick={() => setOpenEdit(false)}>
-                            Close
-                        </Button>
-                    </CardActions>
-                    <CardContent>          
-                        <Typography variant="h5" component="h2">
-                            Form Edit
-                        </Typography>          
-                        <Form 
-                            schema={formOfForms} 
-                            formData={formEditData}
-                            onSubmit={handleFormSubmit}
-                        />
-                    </CardContent>
+                <DialogTitle id="form-edit">Form Edit</DialogTitle>
+                <DialogActions>
+                    <Button variant="outlined" type="button" onClick={() => setOpenEdit(false)}>
+                        Close
+                    </Button>
+                </DialogActions>
+                <DialogContent  scroll={'paper'} dividers>        
+                    <Form 
+                        schema={formOfForms} 
+                        formData={formEditData}
+                        onSubmit={handleFormSubmit}
+                    />
 
-                </Card>
-                </Fade>
-            </Modal>
+                </DialogContent>
+            </Dialog>
         </>
     )
 }

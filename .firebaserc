@@ -1,7 +1,14 @@
 {
   "projects": {
     "default": "portal-resource"
-
+  },
+  "targets": {
+    "portal-resource": {
+      "hosting": {
+        "programhub": [
+          "programhub"
+        ]
+      }
+    }
   }
-  
 }

@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const displayForm = (form, handleOpen, handleOpenEdit) => {
+const displayForm = (form, handleOpen, handleOpenEdit, handleOpenView) => {
 
     return (
         <Grid item xs={12} >
@@ -66,7 +66,10 @@ const displayForm = (form, handleOpen, handleOpenEdit) => {
                             </Button>                        
                             <Button variant="outlined" onClick={(e) => handleOpenEdit(e, form, form.id)}>
                                 Edit Form
-                            </Button>                                                    
+                            </Button>
+                            <Button variant="outlined" onClick={(e) => handleOpenView(e, form.id)}>
+                                View Submissions
+                            </Button>                                                                                
                     </CardActions>    
                 </CardContent>
             </Card>
@@ -112,6 +115,10 @@ const Forms = (props) => {
         setFormJSON(schema);
         setOpen(true);
     };
+
+    const handleOpenView = (e, formID) => {
+        e.preventDefault();
+    }
 
     const handleOpenEdit = (e, form, formID) => {
         e.preventDefault();

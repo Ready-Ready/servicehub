@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import NavBar from '../NavBar/NavBar';
 import Program from '../ProgramInfo/Program';
 import ProgramForms from '../Forms/ProgramForms';
+import Submissions from '../Forms/Submissions';
 import FindResource from '../FindResources/FindResources';
 import Signup from "../Auth/Signup";
 import Login from "../Auth/Login";
@@ -38,6 +39,7 @@ const StartPage = () => {
             <Route path="/login" component={Login} />
             <Route path="/signin" component={SignIn} />
             <PrivateRoute path="/profile" component={UpdateProfile} /> 
+            <PrivateRoute exact path="/programs/:program_ID/forms/:form_ID" component={Submissions} />
         </Switch>
       </>
     )
